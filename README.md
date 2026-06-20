@@ -1,5 +1,7 @@
 # THUMP
 
+**▶ Live: https://thump-beat.vercel.app**
+
 THUMP is a browser groovebox and step sequencer for building a drum loop fast: pick a preset or click steps into the grid, press play, hear the beat, then export the loop as a WAV.
 
 ## Design POV
