@@ -1,0 +1,10 @@
+QA findings to fix in M3 (interactive grid):
+- ON step must FILL the cell (solid track-color block); OFF = quiet empty/ghost default. Loud=ON, not loud-by-default.
+- State hierarchy, visually separable: OFF(empty) < hover(ghost preview) < ON(filled block) < playhead(orange edge/tint); ON+playhead brightest.
+- Reserve the orange accent for the MOVING PLAYHEAD (full-height column), not static downbeat washes.
+- Make beat grouping (every 4) unmistakable via a real gutter/rule, not +1px border.
+- Fill the track rail: per-track MUTE + SOLO + level/velocity affordance.
+- Velocity/accent: encode via fill opacity ramp on the cell (decide now).
+- a11y: remove aria-hidden from the grid; add role, aria-pressed per step, focus-visible.
+- Single source of truth for track colors: use --color-track-* CSS tokens (currently dead; colors injected from JS in sequencer.ts -> drift). 
+- cursor:default on .hardware-button -> pointer.
