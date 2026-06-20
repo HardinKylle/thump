@@ -1,0 +1,6 @@
+node_modules/
+dist/
+logs/*.log
+shots/*.png
+.turn_*
+test-results/
