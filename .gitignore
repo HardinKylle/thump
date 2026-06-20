@@ -4,3 +4,4 @@ logs/*.log
 shots/*.png
 .turn_*
 test-results/
+.team/

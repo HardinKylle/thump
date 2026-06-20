@@ -18,6 +18,7 @@ export type PlayheadSubscriber = (step: number | null) => void;
 
 export type SequencerAudioEngineOptions = {
   bpm?: number;
+  swing?: number;
   pattern?: SequencerPattern;
   accents?: SequencerPattern;
   trackControls?: TrackControls;
@@ -35,6 +36,7 @@ export class SequencerAudioEngine {
 
   constructor({
     bpm = 120,
+    swing = 0,
     pattern = defaultDemoPattern,
     accents = defaultDemoAccents,
     trackControls = defaultTrackControls,
@@ -80,6 +82,7 @@ export class SequencerAudioEngine {
     this.sequence.start(0);
 
     this.setBpm(bpm);
+    this.setSwing(swing);
   }
 
   start(): void {
@@ -102,6 +105,14 @@ export class SequencerAudioEngine {
   setBpm(bpm: number): void {
     this.assertUsable();
     Tone.getTransport().bpm.value = bpm;
+  }
+
+  setSwing(amount: number): void {
+    this.assertUsable();
+    const transport = Tone.getTransport();
+    // The pattern content sits on the 8th-note grid, so shuffle delays the off-beat 8ths.
+    transport.swingSubdivision = '8n';
+    transport.swing = clampSwing(amount);
   }
 
   setPattern(pattern: SequencerPattern, accents = this.accents): void {
@@ -166,4 +177,8 @@ export function createSequencerAudioEngine(options?: SequencerAudioEngineOptions
 
 function clampLevel(level: number): number {
   return Math.min(1, Math.max(0, level));
+}
+
+function clampSwing(amount: number): number {
+  return Math.min(1, Math.max(0, amount));
 }

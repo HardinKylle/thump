@@ -33,6 +33,7 @@ export default function App() {
   const [trackControls, setTrackControls] = useState<TrackControls>(() =>
     cloneTrackControls(defaultSequencerState.trackControls),
   );
+  const [swing, setSwing] = useState(defaultSequencerState.swing);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [activePresetId, setActivePresetId] = useState<string | null>(beatPresets[0].id);
@@ -42,6 +43,7 @@ export default function App() {
   useEffect(() => {
     const engine = createSequencerAudioEngine({
       bpm: defaultSequencerState.bpm,
+      swing,
       pattern: gridState.pattern,
       accents: gridState.accents,
       trackControls,
@@ -80,6 +82,10 @@ export default function App() {
   useEffect(() => {
     engineRef.current?.setPattern(gridState.pattern, gridState.accents);
   }, [gridState]);
+
+  useEffect(() => {
+    engineRef.current?.setSwing(swing);
+  }, [swing]);
 
   useEffect(() => {
     const engine = engineRef.current;
@@ -121,6 +127,7 @@ export default function App() {
     try {
       await exportPatternAsWav({
         bpm: defaultSequencerState.bpm,
+        swing,
         pattern: gridState.pattern,
         accents: gridState.accents,
         trackControls,
@@ -128,7 +135,7 @@ export default function App() {
     } finally {
       setIsExporting(false);
     }
-  }, [gridState, isExporting, trackControls]);
+  }, [gridState, isExporting, swing, trackControls]);
 
   const handleStepPress = useCallback((trackId: TrackId, step: number, mode: StepEditMode) => {
     setActivePresetId(null);
@@ -200,12 +207,14 @@ export default function App() {
     <main className="device-shell" aria-label="THUMP groovebox interface">
       <TransportBar
         bpm={defaultSequencerState.bpm}
+        swing={swing}
         isPlaying={isPlaying}
         isExporting={isExporting}
         waveform={waveform}
         onPlay={handlePlay}
         onStop={handleStop}
         onExport={handleExport}
+        onSwingChange={setSwing}
       />
 
       <PresetStrip

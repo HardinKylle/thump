@@ -4,6 +4,7 @@ import { STEP_COUNT, TRACK_IDS, type SequencerPattern, type TrackControls } from
 
 export type ExportWavOptions = {
   bpm: number;
+  swing?: number;
   pattern: SequencerPattern;
   accents: SequencerPattern;
   trackControls: TrackControls;
@@ -12,12 +13,13 @@ export type ExportWavOptions = {
 
 export async function exportPatternAsWav({
   bpm,
+  swing = 0,
   pattern,
   accents,
   trackControls,
   bars = 2,
 }: ExportWavOptions): Promise<string> {
-  const buffer = await renderPatternToBuffer({ bpm, pattern, accents, trackControls, bars });
+  const buffer = await renderPatternToBuffer({ bpm, swing, pattern, accents, trackControls, bars });
   const wavBlob = encodeToneBufferToWav(buffer);
   const filename = `thump-${createTimestamp()}.wav`;
   downloadBlob(wavBlob, filename);
@@ -26,6 +28,7 @@ export async function exportPatternAsWav({
 
 async function renderPatternToBuffer({
   bpm,
+  swing,
   pattern,
   accents,
   trackControls,
@@ -38,6 +41,8 @@ async function renderPatternToBuffer({
     const hasSolo = TRACK_IDS.some((trackId) => trackControls[trackId].solo);
 
     transport.bpm.value = bpm;
+    transport.swingSubdivision = '8n';
+    transport.swing = clampSwing(swing);
 
     for (let bar = 0; bar < bars; bar += 1) {
       for (let step = 0; step < STEP_COUNT; step += 1) {
@@ -119,6 +124,10 @@ function writeString(view: DataView, offset: number, value: string): void {
 
 function getBarsDurationSeconds(bpm: number, bars: number): number {
   return (60 / bpm) * 4 * bars;
+}
+
+function clampSwing(amount: number): number {
+  return Math.min(1, Math.max(0, amount));
 }
 
 function getStepTransportPosition(bar: number, step: number): string {

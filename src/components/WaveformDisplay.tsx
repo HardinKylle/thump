@@ -3,8 +3,10 @@ type WaveformDisplayProps = {
 };
 
 export function WaveformDisplay({ samples }: WaveformDisplayProps) {
+  const isIdle = samples.every((sample) => Math.abs(sample) < 0.01);
+
   return (
-    <div className="waveform-display" aria-label="Live output waveform">
+    <div className={`waveform-display${isIdle ? ' waveform-display--idle' : ''}`} aria-label="Live output waveform">
       {samples.map((sample, index) => (
         <span
           className="scope-bar"

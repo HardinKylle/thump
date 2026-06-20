@@ -40,6 +40,7 @@ export type TrackControls = Record<TrackId, TrackControlState>;
 
 export type SequencerState = {
   bpm: number;
+  swing: number;
   steps: number;
   tracks: Track[];
   pattern: SequencerPattern;
@@ -83,6 +84,7 @@ export const defaultTrackControls: TrackControls = {
 
 export const defaultSequencerState: SequencerState = {
   bpm: 120,
+  swing: 0,
   steps: STEP_COUNT,
   tracks: [
     { id: 'kick', name: 'KICK' },
