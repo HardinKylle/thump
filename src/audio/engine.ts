@@ -3,8 +3,14 @@ import { createDrumInstruments, type DrumInstruments } from './instruments';
 import {
   STEP_COUNT,
   TRACK_IDS,
+  cloneTrackControls,
   cloneSequencerPattern,
+  defaultDemoAccents,
   defaultDemoPattern,
+  defaultTrackControls,
+  type TrackControls,
+  type TrackControlState,
+  type TrackId,
   type SequencerPattern,
 } from '../state/sequencer';
 
@@ -13,26 +19,48 @@ export type PlayheadSubscriber = (step: number | null) => void;
 export type SequencerAudioEngineOptions = {
   bpm?: number;
   pattern?: SequencerPattern;
+  accents?: SequencerPattern;
+  trackControls?: TrackControls;
 };
 
 export class SequencerAudioEngine {
   private instruments: DrumInstruments;
   private pattern: SequencerPattern;
+  private accents: SequencerPattern;
+  private trackControls: TrackControls;
   private sequence: Tone.Sequence<number>;
   private playheadSubscriber: PlayheadSubscriber | null = null;
   private disposed = false;
 
-  constructor({ bpm = 120, pattern = defaultDemoPattern }: SequencerAudioEngineOptions = {}) {
+  constructor({
+    bpm = 120,
+    pattern = defaultDemoPattern,
+    accents = defaultDemoAccents,
+    trackControls = defaultTrackControls,
+  }: SequencerAudioEngineOptions = {}) {
     this.pattern = cloneSequencerPattern(pattern);
+    this.accents = cloneSequencerPattern(accents);
+    this.trackControls = cloneTrackControls(trackControls);
     this.instruments = createDrumInstruments();
 
     this.sequence = new Tone.Sequence<number>(
       (time, step) => {
         const currentPattern = this.pattern;
+        const currentAccents = this.accents;
+        const currentTrackControls = this.trackControls;
+        const hasSolo = TRACK_IDS.some((trackId) => currentTrackControls[trackId].solo);
 
         for (const trackId of TRACK_IDS) {
-          if (currentPattern[trackId][step]) {
-            this.instruments.voices[trackId].trigger(time);
+          const trackControl = currentTrackControls[trackId];
+
+          if (
+            currentPattern[trackId][step] &&
+            !trackControl.muted &&
+            (!hasSolo || trackControl.solo) &&
+            trackControl.level > 0
+          ) {
+            const accentGain = currentAccents[trackId][step] ? 1 : 0.68;
+            this.instruments.voices[trackId].trigger(time, accentGain * trackControl.level);
           }
         }
 
@@ -73,9 +101,22 @@ export class SequencerAudioEngine {
     Tone.getTransport().bpm.value = bpm;
   }
 
-  setPattern(pattern: SequencerPattern): void {
+  setPattern(pattern: SequencerPattern, accents = this.accents): void {
     this.assertUsable();
     this.pattern = cloneSequencerPattern(pattern);
+    this.accents = cloneSequencerPattern(accents);
+  }
+
+  setTrackControl(trackId: TrackId, trackControl: TrackControlState): void {
+    this.assertUsable();
+    this.trackControls = {
+      ...this.trackControls,
+      [trackId]: {
+        muted: trackControl.muted,
+        solo: trackControl.solo,
+        level: clampLevel(trackControl.level),
+      },
+    };
   }
 
   subscribePlayhead(subscriber: PlayheadSubscriber): () => void {
@@ -112,4 +153,8 @@ export class SequencerAudioEngine {
 
 export function createSequencerAudioEngine(options?: SequencerAudioEngineOptions): SequencerAudioEngine {
   return new SequencerAudioEngine(options);
+}
+
+function clampLevel(level: number): number {
+  return Math.min(1, Math.max(0, level));
 }

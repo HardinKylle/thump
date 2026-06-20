@@ -1,7 +1,7 @@
 import * as Tone from 'tone';
 import type { TrackId } from '../state/sequencer';
 
-type DrumTrigger = (time: number) => void;
+type DrumTrigger = (time: number, velocity: number) => void;
 
 export type DrumVoice = {
   trigger: DrumTrigger;
@@ -45,25 +45,25 @@ export function createDrumInstruments(): DrumInstruments {
   return {
     voices: {
       kick: {
-        trigger: (time) => {
-          kick.triggerAttackRelease('C1', '8n', time);
+        trigger: (time, velocity) => {
+          kick.triggerAttackRelease('C1', '8n', time, velocity);
         },
       },
       snare: {
-        trigger: (time) => {
-          snare.triggerAttackRelease('16n', time);
+        trigger: (time, velocity) => {
+          snare.triggerAttackRelease('16n', time, velocity);
         },
       },
       hat: {
-        trigger: (time) => {
-          hat.triggerAttackRelease('C5', '32n', time);
+        trigger: (time, velocity) => {
+          hat.triggerAttackRelease('C5', '32n', time, velocity);
         },
       },
       clap: {
-        trigger: (time) => {
-          clap.triggerAttackRelease('32n', time);
-          clap.triggerAttackRelease('32n', time + 0.01);
-          clap.triggerAttackRelease('32n', time + 0.02);
+        trigger: (time, velocity) => {
+          clap.triggerAttackRelease('32n', time, velocity);
+          clap.triggerAttackRelease('32n', time + 0.01, velocity);
+          clap.triggerAttackRelease('32n', time + 0.02, velocity);
         },
       },
     },
