@@ -1,11 +1,16 @@
+import { WaveformDisplay } from './WaveformDisplay';
+
 type TransportBarProps = {
   bpm: number;
   isPlaying: boolean;
+  isExporting: boolean;
+  waveform: number[];
   onPlay: () => void;
   onStop: () => void;
+  onExport: () => void;
 };
 
-export function TransportBar({ bpm, isPlaying, onPlay, onStop }: TransportBarProps) {
+export function TransportBar({ bpm, isPlaying, isExporting, waveform, onPlay, onStop, onExport }: TransportBarProps) {
   return (
     <header className="transport-bar">
       <div className="brand-lockup" aria-label="THUMP">
@@ -25,7 +30,12 @@ export function TransportBar({ bpm, isPlaying, onPlay, onStop }: TransportBarPro
         <button className="hardware-button" type="button" onClick={onStop}>
           STOP
         </button>
+        <button className="hardware-button hardware-button--export" type="button" disabled={isExporting} onClick={onExport}>
+          {isExporting ? 'RENDERING...' : 'EXPORT WAV'}
+        </button>
       </div>
+
+      <WaveformDisplay samples={waveform} />
 
       <div className="bpm-display" aria-label={`${bpm} BPM`}>
         <span className="mono-label">BPM</span>

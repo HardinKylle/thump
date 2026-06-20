@@ -51,6 +51,15 @@ export function createEmptyStepPattern(): StepPattern {
   return [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
 }
 
+export function createEmptySequencerPattern(): SequencerPattern {
+  return {
+    kick: createEmptyStepPattern(),
+    snare: createEmptyStepPattern(),
+    hat: createEmptyStepPattern(),
+    clap: createEmptyStepPattern(),
+  };
+}
+
 export const defaultDemoPattern: SequencerPattern = {
   kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
   snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],

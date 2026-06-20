@@ -29,6 +29,7 @@ export class SequencerAudioEngine {
   private accents: SequencerPattern;
   private trackControls: TrackControls;
   private sequence: Tone.Sequence<number>;
+  private waveform: Tone.Waveform;
   private playheadSubscriber: PlayheadSubscriber | null = null;
   private disposed = false;
 
@@ -42,6 +43,8 @@ export class SequencerAudioEngine {
     this.accents = cloneSequencerPattern(accents);
     this.trackControls = cloneTrackControls(trackControls);
     this.instruments = createDrumInstruments();
+    this.waveform = new Tone.Waveform(64);
+    this.instruments.master.connect(this.waveform);
 
     this.sequence = new Tone.Sequence<number>(
       (time, step) => {
@@ -130,6 +133,11 @@ export class SequencerAudioEngine {
     };
   }
 
+  getWaveformData(): Float32Array {
+    this.assertUsable();
+    return this.waveform.getValue();
+  }
+
   dispose(): void {
     if (this.disposed) {
       return;
@@ -139,6 +147,7 @@ export class SequencerAudioEngine {
     transport.stop();
     transport.position = 0;
     this.sequence.dispose();
+    this.waveform.dispose();
     this.instruments.dispose();
     this.playheadSubscriber = null;
     this.disposed = true;

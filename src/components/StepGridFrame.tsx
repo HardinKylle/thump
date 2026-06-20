@@ -41,7 +41,9 @@ export function StepGridFrame({ tracks, steps, pattern, accents, playheadStep, o
                     aria-label={getStepLabel(track.name, step, isOn, isAccented)}
                     title="Shift-click to accent"
                     onClick={(event) => onStepPress(track.id, step, event.shiftKey ? 'accent' : 'toggle')}
-                  />
+                  >
+                    {isOn && isAccented ? <span className="step-accent-mark" aria-hidden="true" /> : null}
+                  </button>
                 </FragmentWithGutter>
               );
             })}

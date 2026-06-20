@@ -9,6 +9,7 @@ export type DrumVoice = {
 
 export type DrumInstruments = {
   voices: Record<TrackId, DrumVoice>;
+  master: Tone.Gain;
   dispose: () => void;
 };
 
@@ -43,6 +44,7 @@ export function createDrumInstruments(): DrumInstruments {
   }).connect(masterGain);
 
   return {
+    master: masterGain,
     voices: {
       kick: {
         trigger: (time, velocity) => {
