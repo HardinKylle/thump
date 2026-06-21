@@ -61,6 +61,45 @@ export function createEmptySequencerPattern(): SequencerPattern {
   };
 }
 
+export function createRandomPattern(): SequencerPattern {
+  const pattern = createEmptySequencerPattern();
+  
+  pattern.kick[0] = true;
+  [4, 8, 12].forEach((step) => {
+    if (Math.random() > 0.5) pattern.kick[step] = true;
+  });
+
+  if (Math.random() > 0.1) pattern.snare[4] = true;
+  if (Math.random() > 0.1) pattern.snare[12] = true;
+  for (let i = 0; i < STEP_COUNT; i++) {
+    if (i !== 4 && i !== 12 && Math.random() > 0.9) pattern.snare[i] = true;
+  }
+  if (!pattern.snare.includes(true)) pattern.snare[4] = true;
+
+  [2, 6, 10, 14].forEach((step) => {
+    if (Math.random() > 0.3) pattern.hat[step] = true;
+  });
+  for (let i = 0; i < STEP_COUNT; i++) {
+    if (![2, 6, 10, 14].includes(i) && Math.random() > 0.8) pattern.hat[i] = true;
+  }
+  if (!pattern.hat.includes(true)) pattern.hat[2] = true;
+
+  for (let i = 0; i < STEP_COUNT; i++) {
+    if (Math.random() > 0.85) pattern.clap[i] = true;
+  }
+  if (!pattern.clap.includes(true)) {
+    pattern.clap[Math.floor(Math.random() * STEP_COUNT)] = true;
+  }
+
+  TRACK_IDS.forEach((trackId) => {
+    if (pattern[trackId].every((v) => v === true)) {
+      pattern[trackId][1] = false;
+    }
+  });
+
+  return pattern;
+}
+
 export const defaultDemoPattern: SequencerPattern = {
   kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
   snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],

@@ -5,3 +5,5 @@ shots/*.png
 .turn_*
 test-results/
 .team/
+.codex_session_started
+.gemini_session_started

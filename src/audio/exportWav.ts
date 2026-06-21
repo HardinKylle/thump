@@ -1,6 +1,7 @@
 import * as Tone from 'tone';
 import { createDrumInstruments } from './instruments';
 import { STEP_COUNT, TRACK_IDS, type SequencerPattern, type TrackControls } from '../state/sequencer';
+import { SWING_SUBDIVISION, clampSwing } from './swing';
 
 export type ExportWavOptions = {
   bpm: number;
@@ -41,7 +42,7 @@ async function renderPatternToBuffer({
     const hasSolo = TRACK_IDS.some((trackId) => trackControls[trackId].solo);
 
     transport.bpm.value = bpm;
-    transport.swingSubdivision = '8n';
+    transport.swingSubdivision = SWING_SUBDIVISION;
     transport.swing = clampSwing(swing);
 
     for (let bar = 0; bar < bars; bar += 1) {
@@ -124,10 +125,6 @@ function writeString(view: DataView, offset: number, value: string): void {
 
 function getBarsDurationSeconds(bpm: number, bars: number): number {
   return (60 / bpm) * 4 * bars;
-}
-
-function clampSwing(amount: number): number {
-  return Math.min(1, Math.max(0, amount));
 }
 
 function getStepTransportPosition(bar: number, step: number): string {

@@ -11,6 +11,8 @@ import {
   TRACK_IDS,
   cloneSequencerPattern,
   cloneTrackControls,
+  createEmptySequencerPattern,
+  createRandomPattern,
   defaultSequencerState,
   type SequencerPattern,
   type TrackControls,
@@ -179,6 +181,15 @@ export default function App() {
     setPlayheadStep(null);
   }, []);
 
+  const handleRandomize = useCallback(() => {
+    setGridState({
+      pattern: createRandomPattern(),
+      accents: createEmptySequencerPattern(),
+    });
+    setActivePresetId(null);
+    setPlayheadStep(null);
+  }, []);
+
   const handleToggleMute = useCallback((trackId: TrackId) => {
     setTrackControls((currentControls) => {
       const nextControls = cloneTrackControls(currentControls);
@@ -222,6 +233,7 @@ export default function App() {
         activePresetId={activePresetId}
         onSelectPreset={handleSelectPreset}
         onClear={handleClear}
+        onRandomize={handleRandomize}
       />
 
       <section className="work-surface" aria-label="Sequencer grid">

@@ -5,9 +5,10 @@ type PresetStripProps = {
   activePresetId: string | null;
   onSelectPreset: (preset: BeatPreset) => void;
   onClear: () => void;
+  onRandomize: () => void;
 };
 
-export function PresetStrip({ presets, activePresetId, onSelectPreset, onClear }: PresetStripProps) {
+export function PresetStrip({ presets, activePresetId, onSelectPreset, onClear, onRandomize }: PresetStripProps) {
   return (
     <section className="preset-strip" aria-label="Beat presets">
       <div className="preset-bank">
@@ -23,9 +24,14 @@ export function PresetStrip({ presets, activePresetId, onSelectPreset, onClear }
           </button>
         ))}
       </div>
-      <button className="preset-chip preset-chip--clear" type="button" onClick={onClear}>
-        CLEAR
-      </button>
+      <div className="preset-bank" style={{ justifyContent: 'flex-end' }}>
+        <button className="preset-chip preset-chip--random" type="button" aria-label="Randomize pattern" title="Generate random beat" onClick={onRandomize}>
+          ⚄ RANDOM
+        </button>
+        <button className="preset-chip preset-chip--clear" type="button" onClick={onClear}>
+          CLEAR
+        </button>
+      </div>
     </section>
   );
 }

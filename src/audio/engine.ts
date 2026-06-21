@@ -1,5 +1,6 @@
 import * as Tone from 'tone';
 import { createDrumInstruments, type DrumInstruments } from './instruments';
+import { SWING_SUBDIVISION, clampSwing } from './swing';
 import {
   STEP_COUNT,
   TRACK_IDS,
@@ -110,8 +111,7 @@ export class SequencerAudioEngine {
   setSwing(amount: number): void {
     this.assertUsable();
     const transport = Tone.getTransport();
-    // The pattern content sits on the 8th-note grid, so shuffle delays the off-beat 8ths.
-    transport.swingSubdivision = '8n';
+    transport.swingSubdivision = SWING_SUBDIVISION;
     transport.swing = clampSwing(amount);
   }
 
@@ -175,10 +175,6 @@ export function createSequencerAudioEngine(options?: SequencerAudioEngineOptions
   return new SequencerAudioEngine(options);
 }
 
-function clampLevel(level: number): number {
+export function clampLevel(level: number): number {
   return Math.min(1, Math.max(0, level));
-}
-
-function clampSwing(amount: number): number {
-  return Math.min(1, Math.max(0, amount));
 }
